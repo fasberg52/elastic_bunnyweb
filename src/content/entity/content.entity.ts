@@ -1,28 +1,35 @@
-import { BaseElasticEntity } from '@base/common/base/base.entity';
 import { IsArray, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { BaseElasticEntity } from '../../common/base/base.entity';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class ContentElasticEntity extends BaseElasticEntity {
-  @IsString()
-  @IsNotEmpty()
-  title: string;
+	@ApiProperty()
+	@IsString()
+	@IsNotEmpty()
+	title: string;
 
-  @IsString()
-  @IsOptional()
-  content: string;
+	@ApiPropertyOptional()
+	@IsString()
+	@IsOptional()
+	content: string;
 
-  @IsString()
-  @IsOptional()
-  thumbnail: string;
+	@ApiPropertyOptional()
+	@IsString()
+	@IsOptional()
+	thumbnail: string;
 
-  @IsArray()
-  @IsOptional()
-  images: { url: string; alt: string }[];
+	@ApiPropertyOptional()
+	@IsArray()
+	@IsOptional()
+	images: { url: string; alt: string }[];
 
-  @IsArray()
-  @IsOptional()
-  tags: string[];
+	@ApiPropertyOptional()
+	@IsArray()
+	@IsOptional()
+	tags: string[];
 
-  @IsString()
-  @IsOptional()
-  categories: string[];
+	@ApiPropertyOptional()
+	@IsString()
+	@IsOptional()
+	categories: string[];
 }

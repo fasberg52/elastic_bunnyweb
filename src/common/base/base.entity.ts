@@ -1,5 +1,5 @@
-export abstract class BaseElasticEntity {
-  id: string;
-  createdAt: Date;
-  updatedAt: Date;
+export class BaseElasticEntity {
+	id: string;
+	createdAt: Date;
+	updatedAt: Date;
 }

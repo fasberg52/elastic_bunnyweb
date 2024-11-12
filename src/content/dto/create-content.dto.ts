@@ -1,5 +1,5 @@
+import { PickType } from '@nestjs/swagger';
 import { ContentElasticEntity } from '../entity/content.entity';
-import { PickType } from '@nestjs/mapped-types';
 
 export class CreateContentDto extends PickType(ContentElasticEntity, [
 	'title',

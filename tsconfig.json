@@ -18,11 +18,7 @@
 		"forceConsistentCasingInFileNames": false,
 		"noFallthroughCasesInSwitch": false,
 		"resolveJsonModule": true,
-		"preserveSymlinks": true,
-		"paths": {
-			"@base/*": ["./*"],
-			"@content/*": ["content/*"]
-		}
+		"preserveSymlinks": true
 	},
 	"exclude": ["node_modules", "dist"]
 }

@@ -4,44 +4,58 @@ import { ElasticsearchService } from '@nestjs/elasticsearch';
 import { CreateContentDto } from './dto/create-content.dto';
 import { SearchContentDto } from './dto/search.dto';
 
-export class ContentRepository implements OnModuleInit {
+export class ContentRepository {
+	private readonly content_index = 'content';
 	constructor(
-		private readonly configService: ConfigService,
+		protected readonly configService: ConfigService,
 		protected readonly elasticsearchService: ElasticsearchService,
 	) {}
 
-	async onModuleInit() {
-		await this.createMapping();
-	}
-
 	async createMapping() {
-		await this.elasticsearchService.indices.create({
-			index: await this.getIndex(),
-			body: {
-				mappings: {
-					properties: {
-						title: { type: 'text' },
-						content: { type: 'text' },
-						thumbnail: { type: 'text' },
-						images: {
-							type: 'nested',
-							properties: { url: { type: 'text' }, alt: { type: 'text' } },
+		const index = await this.getIndex();
+
+		try {
+			const response = await this.elasticsearchService.indices.create({
+				index,
+				body: {
+					mappings: {
+						properties: {
+							title: { type: 'text' },
+							content: { type: 'text' },
+							thumbnail: { type: 'text' },
+							images: {
+								type: 'nested',
+								properties: { url: { type: 'text' }, alt: { type: 'text' } },
+							},
+							tags: { type: 'keyword' },
+							category: { type: 'keyword' },
+							createdAt: { type: 'date' },
+							updatedAt: { type: 'date' },
 						},
-						tags: { type: 'keyword' },
-						category: { type: 'keyword' },
-						createdAt: { type: 'date' },
-						updatedAt: { type: 'date' },
 					},
 				},
-			},
-		});
+			});
+
+			console.log('Index created:', response);
+		} catch (error) {
+			console.error('Error creating index:', error);
+		}
 	}
 
+
+
 	async createContent(createContentDto: CreateContentDto) {
-		return this.elasticsearchService.index({
-			index: await this.getIndex(),
-			body: createContentDto,
-		});
+		try {
+			console.log(`${JSON.stringify(createContentDto)}`);
+			const test = await this.elasticsearchService.index({
+				index: await this.getIndex(),
+				body: createContentDto,
+			});
+			console.log('Content created:', test);
+			return;
+		} catch (error) {
+			console.error('Error creating content >>>> :', error);
+		}
 	}
 
 	async searchContent(searchContentDto: SearchContentDto) {
@@ -59,6 +73,6 @@ export class ContentRepository implements OnModuleInit {
 	}
 
 	async getIndex() {
-		return this.configService.get('ELASTICSEARCH_INDEX');
+		return process.env.ELASTICSEARCH_INDEX_PREFIX + this.content_index;
 	}
 }

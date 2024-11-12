@@ -1,15 +1,18 @@
 import { Module } from '@nestjs/common';
 import { ContentController } from './content.controller';
 import { ContentService } from './content.service';
-import { ContentRepository } from './content.repository';
-import { ElasticsearchModule } from '@nestjs/elasticsearch';
+import { ElasticsearchModule, ElasticsearchService } from '@nestjs/elasticsearch';
+import { ConfigModule } from '@nestjs/config';
+import { config as dotenvConfig } from 'dotenv';
+import { SearchModule } from '../elasticsearch/elasticsearch.module';
+import { PaginationService } from '../utils/pagination.service';
 
-const ElasticRepository = [ContentRepository];
+dotenvConfig({ path: '.env' });
 
 @Module({
-	imports: [ElasticsearchModule],
+	imports: [],
 	controllers: [ContentController],
-	providers: [...ElasticRepository, ContentService],
-	exports: [],
+	providers: [ContentService, PaginationService],
+	exports: [PaginationService],
 })
-export class ContetntModule {}
+export class ContentModule {}

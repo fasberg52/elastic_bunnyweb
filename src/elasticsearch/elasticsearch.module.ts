@@ -1,17 +1,10 @@
-import { Module, Global } from '@nestjs/common';
-
+import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { ElasticsearchModule } from '@nestjs/elasticsearch';
-import { ContentModule } from './content/content.module';
-import { UtilsModule } from './utils/utils.module';
-import { ProjectModule } from './project/project.module';
+import { ElasticsearchModule, ElasticsearchService } from '@nestjs/elasticsearch';
 
-@Global()
 @Module({
 	imports: [
-		ConfigModule.forRoot({
-			isGlobal: true,
-		}),
+		ConfigModule,
 		ElasticsearchModule.registerAsync({
 			imports: [ConfigModule],
 			useFactory: async (configService: ConfigService) => ({
@@ -24,10 +17,8 @@ import { ProjectModule } from './project/project.module';
 			}),
 			inject: [ConfigService],
 		}),
-		ContentModule,
-		UtilsModule,
-		ProjectModule,
 	],
-	exports: [ElasticsearchModule],
+	providers: [],
+	exports: [],
 })
-export class AppModule {}
+export class SearchModule {}
