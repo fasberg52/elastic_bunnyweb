@@ -1,5 +1,15 @@
 import { Pagination } from '../../common/base/pagination';
 
+export class ListResponse<T> {
+	data: T;
+
+	success: boolean;
+	constructor(data: T) {
+		this.success = true;
+		this.data = data;
+	}
+}
+
 export class ListsResponse<T> {
 	data: T[];
 	total: number;

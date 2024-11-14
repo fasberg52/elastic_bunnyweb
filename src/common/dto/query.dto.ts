@@ -1,6 +1,6 @@
-import { ApiPropertyOptional, PartialType } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
 import { PaginateDto } from './paginate.dto';
-import { IsOptional, IsString } from 'class-validator';
+import { IsIn, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class QueryDto extends PartialType(PaginateDto) {
 	@ApiPropertyOptional()
@@ -12,4 +12,15 @@ export class QueryDto extends PartialType(PaginateDto) {
 	@IsString()
 	@IsOptional()
 	query: string;
+
+	@ApiProperty({ default: 'createdAt' })
+	@IsString()
+	@IsNotEmpty()
+	sortField: string = 'createdAt';
+
+	@ApiProperty({ default: 'desc' })
+	@IsString()
+	@IsNotEmpty()
+	@IsIn(['asc', 'desc'])
+	sortOrder?: 'asc' | 'desc' = 'desc';
 }

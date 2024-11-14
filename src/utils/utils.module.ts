@@ -1,10 +1,12 @@
 import { Module } from '@nestjs/common';
 import { PaginationService } from './pagination.service';
+import { S3Service } from './s3.service';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-	imports: [],
+	imports: [ConfigModule],
 	controllers: [],
-	providers: [PaginationService],
-	exports: [PaginationService],
+	providers: [PaginationService,S3Service],
+	exports: [PaginationService,S3Service],
 })
 export class UtilsModule {}

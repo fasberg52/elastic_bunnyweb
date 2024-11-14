@@ -1,5 +1,14 @@
+import { IsDateString, IsOptional, IsString } from 'class-validator';
+
 export class BaseElasticEntity {
+	@IsString()
 	id: string;
-	createdAt: Date;
+
+
+	@IsDateString()
+	@IsOptional()
+	createdAt?: Date;
+
+	@IsDateString()
 	updatedAt: Date;
 }

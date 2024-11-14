@@ -9,7 +9,7 @@ import {
 } from 'class-validator';
 import { BaseElasticEntity } from '../../common/base/base.entity';
 
-export class ProjectEntity extends BaseElasticEntity {
+export class ProjectElasticEntity extends BaseElasticEntity {
 	@ApiProperty()
 	@IsString()
 	@IsNotEmpty()
@@ -67,4 +67,8 @@ export class ProjectEntity extends BaseElasticEntity {
 	@IsBoolean()
 	@IsOptional()
 	isActive: boolean;
+
+	@ApiProperty()
+	@IsBoolean()
+	deleted: boolean = false;
 }
