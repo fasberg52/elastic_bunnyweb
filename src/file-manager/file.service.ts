@@ -7,6 +7,7 @@ import { ElasticsearchService } from '@nestjs/elasticsearch';
 import { S3Service } from '../utils/s3.service';
 import { ConfigService } from '@nestjs/config';
 import { FileElasticEntity } from './entity/file.entity';
+import { getTotalHits } from '../common/base/total-hit';
 
 @Injectable()
 export class FileService {
@@ -47,33 +48,54 @@ export class FileService {
 	}
 
 	async getFileUrl(key: string): Promise<FileElasticEntity> {
+		console.log(key);
 		const existingFile = await this.elasticSearch.search({
 			index: await this.getIndex(),
 			body: {
 				query: {
-					bool: {
-						must: [
-							{
-								term: {
-									key: key,
-								},
-							},
-						],
+					term: {
+						key,
 					},
 				},
 			},
 		});
 
-		if (
-			(typeof existingFile.hits.total === 'number' && existingFile.hits.total === 0) ||
-			(typeof existingFile.hits.total !== 'number' && existingFile.hits.total.value === 0)
-		) {
+		console.log('Elasticsearch response:', JSON.stringify(existingFile, null, 2));
+
+		console.log(existingFile);
+
+		const totalHits = getTotalHits(existingFile.hits);
+		if (totalHits === 0) {
 			throw new NotFoundException('فایل وجود ندارد');
 		}
 
 		const result = await this.s3Service.getFileUrl(key);
 
 		return result;
+	}
+
+	async createMapping() {
+		const index = await this.getIndex();
+
+		const indexExists = await this.elasticSearch.indices.exists({ index });
+		if (!indexExists) {
+			const response = await this.elasticSearch.indices.create({
+				index,
+				body: {
+					mappings: {
+						properties: {
+							key: { type: 'keyword' },
+							size: { type: 'long' },
+							mimetype: { type: 'keyword' },
+							url: { type: 'text' },
+						},
+					},
+				},
+			});
+			console.log('Index created successfully');
+		} else {
+			console.log('Index already exists');
+		}
 	}
 
 	async getIndex() {

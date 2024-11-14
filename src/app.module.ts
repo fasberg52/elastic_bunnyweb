@@ -8,6 +8,7 @@ import { ProjectModule } from './project/project.module';
 import { UserModule } from './user/user.module';
 import { CategoriesModule } from './category/categories.module';
 import { FileModule } from './file-manager/file.module';
+import { IndexMigrationService } from './migration/elastic.migration';
 
 @Global()
 @Module({
@@ -34,6 +35,7 @@ import { FileModule } from './file-manager/file.module';
 		CategoriesModule,
 		FileModule,
 	],
-	exports: [ElasticsearchModule],
+	providers: [IndexMigrationService],
+	exports: [ElasticsearchModule, IndexMigrationService],
 })
 export class AppModule {}
