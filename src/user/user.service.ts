@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { ElasticsearchService } from '@nestjs/elasticsearch';
 import { CreateUserDto, GetAllUserDto, UpdateUserDto } from './dto/index.dto';
 import { getTotalHits } from '../common/base/total-hit';
@@ -6,6 +6,7 @@ import { PaginationService } from '../utils/pagination.service';
 import { buildSort } from '../common/base/sort';
 import { ListsPaginateResponse } from '../common/response/list.response';
 import { UserElasticEntity } from './entity/user.entity';
+import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class UserService {
@@ -15,9 +16,18 @@ export class UserService {
 		private readonly paginateService: PaginationService,
 	) {}
 
+	async hashPassword(password: string) {
+		const salt = await bcrypt.genSalt(10);
+		const hashedPassword = await bcrypt.hash(password, salt);
+		return hashedPassword;
+	}
+
+	async comparePassword(password: string, hashedPassword: string) {
+		return await bcrypt.compare(password, hashedPassword);
+	}
+
 	async createUser(createUserDto: CreateUserDto) {
-		const { id, firstName, lastName, userName, password, role, createdAt, updatedAt } =
-			createUserDto;
+		const { firstName, lastName, userName, password, role } = createUserDto;
 
 		const existingUser = await this.elasticSearch.search({
 			index: await this.getIndex(),
@@ -33,15 +43,14 @@ export class UserService {
 		if (totalHits > 0) {
 			throw new BadRequestException('این کاربر از قبل وجود دارد');
 		}
+		const hashedPassword = await this.hashPassword(password);
 		const user = {
-			id,
 			firstName,
 			lastName,
 			userName,
-			password,
+			password: hashedPassword,
 			role,
-			createdAt,
-			updatedAt,
+			createdAt: new Date(),
 		};
 
 		const response = await this.elasticSearch.index({
@@ -117,6 +126,45 @@ export class UserService {
 		const total = getTotalHits(result.hits);
 
 		return this.paginateService.formatPaginatedResponse(data, total, page, limit);
+	}
+
+	async findOne(id: string): Promise<UserElasticEntity> {
+		const response = await this.elasticSearch.get({
+			index: await this.getIndex(),
+			id,
+		});
+
+		if (!response.found) {
+			throw new BadRequestException('کاربر یافت نشد');
+		}
+
+		return {
+			id: response._id,
+			...(response._source as UserElasticEntity),
+		};
+	}
+	async searchByUserName(userName: string): Promise<UserElasticEntity> {
+		const result = await this.elasticSearch.search({
+			index: await this.getIndex(),
+			body: {
+				query: {
+					term: {
+						userName: userName,
+					},
+				},
+			},
+		});
+
+		if (result.hits.hits.length === 0) {
+			throw new NotFoundException('کاربر یافت نشد');
+		}
+
+		const hit = result.hits.hits[0];
+		console.log(`hit >>> `, hit);
+		return {
+			id: hit._id,
+			...(hit._source as object),
+		} as UserElasticEntity;
 	}
 
 	async createMapping() {

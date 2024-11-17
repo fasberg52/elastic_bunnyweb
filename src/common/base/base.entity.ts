@@ -1,6 +1,6 @@
 import { IsDateString, IsOptional, IsString } from 'class-validator';
 
-export class BaseElasticEntity {
+export abstract class BaseElasticEntity {
 	@IsString()
 	id: string;
 
