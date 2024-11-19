@@ -16,7 +16,7 @@ async function bootstrap() {
 
 	app.use(compression());
 	app.setGlobalPrefix('api');
-
+	app.enableCors();
 	const httpAdapter = app.get(HttpAdapterHost);
 	app.useGlobalFilters(new GlobalExceptionFilter(httpAdapter));
 	new SwaggerHelper().setup(app);

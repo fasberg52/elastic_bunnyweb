@@ -5,6 +5,7 @@ import { MessageResponse } from '../common/response/message.response';
 import { ListsPaginateResponse } from '../common/response/list.response';
 import { ProjectElasticEntity } from './entity/project.entity';
 import { GetAllProjectDto, UpdateProjectDto, CreateProjectDto } from './dto/index.dto';
+import { Public } from '../common/decorator/public.decorator';
 
 @Controller('project')
 export class ProjectController {
@@ -27,6 +28,7 @@ export class ProjectController {
 		return new MessageResponse('پروژه با موفقیت به روز رسانی شد');
 	}
 
+	@Public()
 	@ApiOkResponse({ description: 'get all projects' })
 	@Get()
 	async getAllProjects(
