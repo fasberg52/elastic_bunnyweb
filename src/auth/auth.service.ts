@@ -32,7 +32,7 @@ export class AuthService {
 		const user = await this.validateUser(loginDto);
 		console.log(`>>> login user is ${JSON.stringify(user)}`);
 
-		const payload = { username: user.userName, sub: user.id };
+		const payload = { username: user.userName, sub: user.id, roles: user.role };
 
 		return { access_token: await this.jwtService.signAsync(payload) };
 	}

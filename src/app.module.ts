@@ -11,7 +11,6 @@ import { FileModule } from './file-manager/file.module';
 import { IndexMigrationService } from './migration/elastic.migration';
 import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/guards/jwt.guard';
-import { MyConfigModule } from './config/modules.config';
 import { AuthModule } from './auth/auth.module';
 import { GlobalExceptionFilter } from './exception/global-catch.exception';
 

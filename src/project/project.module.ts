@@ -7,6 +7,6 @@ import { ProjectController } from './project.contoller';
 	imports: [],
 	controllers: [ProjectController],
 	providers: [ProjectService, PaginationService],
-	exports: [],
+	exports: [ProjectService],
 })
 export class ProjectModule {}

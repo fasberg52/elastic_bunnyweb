@@ -130,7 +130,45 @@ export class ProjectService {
 			id,
 		});
 	}
-	
+
+	async createMapping() {
+		const index = await this.getIndex();
+
+		const exists = await this.elasticsearchService.indices.exists({ index });
+		if (!exists) {
+			await this.elasticsearchService.indices.create({
+				index,
+				body: {
+					mappings: {
+						properties: {
+							title: { type: 'text' },
+							description: { type: 'text' },
+							thumbnail: { type: 'keyword' },
+							images: {
+								type: 'nested',
+								properties: {
+									url: { type: 'keyword' },
+									alt: { type: 'text' },
+								},
+							},
+							tags: { type: 'keyword' },
+							categories: { type: 'keyword' },
+							startDate: { type: 'date' },
+							endDate: { type: 'date' },
+							status: { type: 'keyword' },
+							projectLink: { type: 'keyword' },
+							isActive: { type: 'boolean' },
+							deleted: { type: 'boolean' },
+							createdAt: { type: 'date' },
+							updatedAt: { type: 'date' },
+						},
+					},
+				},
+			});
+		} else {
+			console.log(`Index "${index}" already exists.`);
+		}
+	}
 
 	async getIndex() {
 		return process.env.ELASTICSEARCH_INDEX_PREFIX + this.project_index;

@@ -3,7 +3,6 @@ import { AppModule } from './app.module';
 import compression from 'compression';
 import { SwaggerHelper } from './common/swagger/swagger';
 import { ValidationPipe } from '@nestjs/common';
-import { Logger } from '@nestjs/common';
 import { GlobalExceptionFilter } from './exception/global-catch.exception';
 
 async function bootstrap() {
